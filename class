@@ -1,0 +1,4 @@
+Create View hotels_test AS
+	Select "Name"
+		From hotels;
+		Where Hotel_ID;

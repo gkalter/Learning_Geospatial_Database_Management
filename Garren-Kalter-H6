@@ -1,0 +1,259 @@
+--Garren Kalter's 6th Homework Assignment Spatial Database Development 
+DROP TABLE city CASCADE;
+
+CREATE TABLE city (
+    id varchar(10),
+    name varchar(99),
+    countrycode character(3),
+    district varchar(99),
+    population integer
+);
+
+-- Read in city csv file
+--Reminder: On Macbooks granting PgAdmin access to cvs files requires disabling the main firewall
+--But it can be stored locally in Postgres, so all following csv files come from within the local
+--storage system.
+
+COPY city(id, name, countrycode, district, population)
+FROM '/Library/PostgreSQL/14/bin/Database/city.csv'  CSV DELIMITER ',' ;
+
+--Let's check if the city table works
+SELECT * FROM city
+
+DROP TABLE country CASCADE;
+
+CREATE TABLE country (
+    code text,
+    name text NOT NULL,
+    continent text NOT NULL,
+    region text NOT NULL,
+    surfacearea real NOT NULL,
+    indepyear smallint,
+    population integer NOT NULL,
+    lifeexpectancy real,
+    gnp numeric(10,2),
+    gnpold numeric(10,2),
+    localname text NOT NULL,
+    governmentform text NOT NULL,
+    headofstate text,
+    capital integer,
+    code2 character(2) NOT NULL,
+    CONSTRAINT country_continent_check CHECK ((((((((continent = 'Asia'::text) OR (continent = 'Europe'::text)) OR (continent = 'North America'::text)) OR (continent = 'Africa'::text)) OR (continent = 'Oceania'::text)) OR (continent = 'Antarctica'::text)) OR (continent = 'South America'::text)))
+);
+
+--Read in csv file
+Copy country(code, name, continent, region, surfacearea, indepyear, population, 
+			 lifeexpectancy, gnp, gnpold, localname, governmentform, 
+			 headofstate, capital, code2)
+							 
+FROM '/Library/PostgreSQL/14/bin/Database/country.csv'  CSV DELIMITER ',' ;
+
+--Let's check if the country table works
+SELECT * FROM country; 
+
+DROP TABLE language CASCADE;
+
+CREATE TABLE language (
+    countrycode text,
+    "language" text NOT NULL,
+    isofficial boolean NOT NULL,
+    percentage real NOT NULL
+);
+
+--Read in csv file
+COPY language(countrycode, language, isofficial, percentage)
+							 
+FROM '/Library/PostgreSQL/14/bin/Database/language.csv'  CSV DELIMITER ',' ;
+
+--Let's check if the language table works
+SELECT * FROM language;
+
+--Syntax for answering qs: CREATE OR REPLACE VIEW your-name_q1 AS – or your-name_q2, q3, etc.
+
+CREATE VIEW garren_kalter_q1 AS
+SELECT CONCAT('The CONCAT() operator is used to concatenate string');
+
+--Answer Q1
+SELECT * FROM garren_kalter_q1;
+
+--Note: A bit unnessecary for this question could have just left the select statement
+------------------------------------------------------------------------------
+CREATE VIEW garren_kalter_q2 AS
+SELECT CONCAT('The MAX() operator is used to calculate the maximum value.');
+
+--Answer Q2
+SELECT * FROM garren_kalter_q2;
+
+--Note: A bit unnessecary for this question could have just left the select statement
+------------------------------------------------------------------------------------
+DROP VIEW garren_kalter_q3;
+
+CREATE VIEW garren_kalter_q3 AS
+SELECT COUNT(DISTINCT code) AS total FROM country;
+
+-- Q3 Answer: 239 countries in the data base
+SELECT * FROM garren_kalter_q3;
+--------------------------------------------------------------------------------------------
+DROP VIEW garren_kalter_q4;
+
+CREATE VIEW garren_kalter_q4 AS
+SELECT * FROM country
+WHERE population >= '250000000';
+
+-- Q4: There are 3 Countries with a population above 250 million: India, China, and the US.
+SELECT * FROM garren_kalter_q4;
+--------------------------------------------------------------------------------------------
+DROP VIEW garren_kalter_q5;
+
+CREATE VIEW garren_kalter_q5 AS
+SELECT name, population FROM country ORDER BY country;
+
+--Q5: List of countries and populations alphabetically. 
+SELECT * FROM garren_kalter_q5;
+---------------------------------------------------------------------------------------------
+DROP VIEW garren_kalter_q6;
+
+--Calculate average life expectancy// Answer: 66.4860361164265 years life expectancy 
+SELECT AVG(lifeexpectancy) FROM country;
+
+--Calculate GNP // Answer: 122823.882426778243 dollars as gnp
+SELECT AVG(gnp) FROM country;
+
+--Note the above averages could be directly inputted into the following query
+
+--Generate list of countries with requisite conditions
+CREATE VIEW garren_kalter_q6 AS
+SELECT * FROM country
+WHERE lifeexpectancy >= '66.4860361164265'  AND gnp <= '122823.882426778243';
+
+--View results
+SELECT * FROM garren_kalter_q6;
+--------------------------------------------------------------------------------------------
+DROP VIEW garren_kalter_q7
+
+CREATE VIEW garren_kalter_q7 AS
+SELECT name, headofstate, governmentform, population FROM country ORDER BY population DESC LIMIT 10;
+
+--Q7:Name of top 10 countries, head of state, associated government form and population in descending order
+SELECT * FROM garren_kalter_q7;
+-------------------------------------------------------------------------------------------
+DROP VIEW garren_kalter_q8;
+
+CREATE VIEW garren_kalter_q8 AS
+SELECT governmentform, AVG(population) FROM country 
+WHERE governmentform = 'Federal Republic' OR  governmentform = 'Socialistic Republic' OR  governmentform = 'Monarchy' 
+GROUP BY governmentform ORDER BY AVG(population) DESC;
+
+--Q8 Answer: Federal Republics have the largest population.
+SELECT * FROM garren_kalter_q8;
+-------------------------------------------------------------------------------------------
+--Find the Cuban country code
+SELECT * FROM country
+WHERE name = 'Cuba';
+
+DROP VIEW garren_kalter_q9;
+
+--List of the three least populous Cuban cities. Default in 'order by' is smallest to largest.
+CREATE VIEW garren_kalter_q9 as
+SELECT name, population FROM city
+WHERE countrycode = 'CUB' order by population Limit 3;
+
+--Q9: List of three least populous cities. I choose to include populations as well.
+SELECT * FROM garren_kalter_q9;
+
+--------------------------------------------------------------------------------------------
+DROP VIEW garren_kalter_q10;
+
+CREATE VIEW garren_kalter_q10 AS
+SELECT name FROM city
+WHERE countrycode = 'CUB';
+
+--List of all Cuban cities
+SELECT * FROM garren_kalter_q10;
+
+--Find Cuban government type 
+CREATE VIEW garren_kalter_q10b AS 
+SELECT governmentform FROM country
+WHERE code = 'CUB';
+
+--Socialistic Republic
+SELECT * FROM garren_kalter_q10b;
+
+--Combine, could possibly be done with a join as well.
+CREATE VIEW garren_kalter_q10c AS
+SELECT * FROM garren_kalter_q10
+UNION
+SELECT * FROM garren_kalter_q10b;
+
+-- Works but makes government form entry 3 for some reason, when you run it Professor it may
+-- be elsewhere in the list. 
+SELECT * FROM garren_kalter_q10c;
+-------------------------------------------------------------------------------------------
+
+--Q11: Find the Swiss country code
+SELECT * FROM country
+where name = 'Switzerland';
+
+----Take an inventory of Swiss cities 
+CREATE VIEW garren_kalter_q11a as
+SELECT * FROM city
+where countrycode = 'CHE';
+
+--All Swiss cities have a populaion greater than 50,000 if there were cities below that the
+--code in line 209 would be: where countrycode = 'CHE' and population > '50000';
+SELECT * FROM garren_kalter_q11a;
+
+--Assess the languages spoken in Swiss cities
+CREATE VIEW garren_kalter_q11b AS
+SELECT * FROM language
+where countrycode = 'CHE';
+
+--Q11 Answer: Only one city has Romanash as an official language with 0.6% of the population speaking it.
+SELECT * FROM garren_kalter_q11b;
+
+--Note:No relevent information available to join language and city csvs reliably therefore assumed 
+--since all cities in the city csv meet pop. criteria it is assumed that all in language will as well.
+
+--Note:One less city available in the languages csv
+------------------------------------------------------------------------------------------
+
+--Q12: List of cities and population for Swiss cities greater than 50,000 
+--A.K.A The answer/code to question 11a without unnessecary columns
+DROP VIEW garren_kalter_q12;
+
+CREATE VIEW garren_kalter_q12 AS
+SELECT name, population FROM city
+WHERE countrycode = 'CHE';
+
+--Choose to include population for personal reference
+SELECT * FROM garren_kalter_q12;
+-------------------------------------------------------------------------------------------
+
+DROP VIEW garren_kalter_q13;
+
+--Sum all cities in a given country 
+CREATE VIEW garren_kalter_q13 AS
+SELECT countrycode, SUM(population) AS sum_of_city_population FROM 
+city GROUP BY countrycode;
+
+--Check my work
+SELECT * FROM garren_kalter_q13;
+
+--Join columns of interest
+CREATE VIEW garren_kalter_q13b AS
+SELECT garren_kalter_q13.sum_of_city_population, country.name, country.population
+FROM garren_kalter_q13
+INNER JOIN country ON garren_kalter_q13.countrycode=country.code;
+
+--Check my work
+SELECT* FROM garren_kalter_q13b;
+
+--Create final table with difference column
+CREATE VIEW garren_kalter_q13c AS
+SELECT *, population - sum_of_city_population as city_country_population_difference from garren_kalter_q13b
+
+--Table with sum of city populations in each country, names of the country,
+--population of each country, and the difference between country and city populations.
+SELECT * FROM garren_kalter_q13c;
+
+

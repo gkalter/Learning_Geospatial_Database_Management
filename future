@@ -1,0 +1,25 @@
+Create Schema ch01;
+
+Create table ch01.lu_franchises (
+id char(3) Primary key,
+franchise varchar(30)
+);
+
+Insert into ch01.lu_franchises(id, franchise)
+
+Values
+('BKG', 'Burger King'), ('CJR', 'Carl"s Jr'),
+('HDE', 'Hardee'), ('INO', 'In-N-Out'),
+('JIB', 'Jack in the Box'), ('KFC', 'Kentucky Fried Chicken'),
+('MCD', 'McDonald'), ('PZH', 'Pizza Hut'),
+('TCB', 'Taco Bell'), ('WDY', 'Wendy')
+
+Create Table ch.01restaurants(
+id serial Primary Key,
+franchise char(3) NOT NULL,
+geom geometry(point, 2163)
+);
+
+Create index idx_code_restaurants_geom ON ch01.restaurants USING gist(geom);
+
+Alter table ch.01restaurants

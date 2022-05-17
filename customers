@@ -1,0 +1,30 @@
+DROP TABLE Customers;
+CREATE TABLE Customers(
+	customer_id  int,
+	FName VARCHAR(255),
+	LName VARCHAR(255),
+	Room int,
+	Phone int,
+	Zipcode int,
+	St VARCHAR(255),
+	city VARCHAR(255),
+	Accessibility boolean, 
+	AbHeight boolean,
+	Rewards_Member VARCHAR(255),
+	PRIMARY KEY(customer_id));	
+	
+SELECT * FROM Customers
+
+
+VALUES
+
+        (1, 'D', 'Dangel', 666, 847-991-0257, 01610, 'Mudfog', 'England', False, False, Yes),
+        (2, 'D', 'Thiccian' 201, 903-993-0258, 01610, 'Worcester', 'MA', False, False, Yes),
+        (3, 'J', 'Ebasset', 301, 685-995-0259, 01610, 'Worcester', 'MA', False, False, Yes),       
+		(4,'Dick', 'Traina' 401, 773-997-0260, 01610, 'Worcester', 'MA', False, True, No), 	
+        (5, 'Morty', 'Mortinson', 501, 854-999-0261, 001610, 'Worcester', 'MA', False, False, No),       
+        (6,'Glenn', 'Fergieson', 601, 909-991-0262, 001610, 'Worcester', 'MA', True, False, No),
+  		(7,'Frederick', 'NotDouglas', 701, 109-991-02563, 001610, 'Worcester', 'MA', False, False, No),
+		(8,'Howard', 'NotJefferson', 801, 112-991-0264, 001610, 'Worcester', 'MA', False, False, No),	
+		(9,'Walle', 'Haswood', 901, 904-991-0266, 001610, 'Worcester', 'MA', False, True, No),
+		(10,'Edmund', 'Stannford', 101, 112-991-0269, 001610, 'Worcester', 'MA', False, False, No)

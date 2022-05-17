@@ -1,0 +1,3 @@
+copy ch01.restaurants_staging
+FROM
+'E:\postgis_in_action_2e_ch01_code_data\ch01\data\restaurants.csv' DELIMITER as ',';

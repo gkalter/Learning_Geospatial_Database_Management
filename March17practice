@@ -1,0 +1,154 @@
+CREATE TABLE ch02.my_points (
+
+id serial PRIMARY KEY,
+
+p geometry(POINT),
+
+pz geometry(POINTZ),
+
+pm geometry(POINTM),
+
+pzm geometry(POINTZM),
+
+p_srid geometry(POINT,4269)
+
+);
+
+INSERT INTO ch02.my_points (p, pz, pm, pzm, p_srid)
+
+VALUES (
+
+ST_GeomFromText('POINT(1 -1)'),
+
+ST_GeomFromText('POINT Z(1 -1 1)'),
+
+ST_GeomFromText('POINT M(1 -1 1)'),
+
+ST_GeomFromText('POINT ZM(1 -1 1 1)'),
+
+ST_GeomFromText('POINT(1 -1)',4269)
+
+) ;
+
+CREATE TABLE ch02.my_linestrings (
+
+id serial PRIMARY KEY,
+
+name varchar(20),
+
+my_linestrings geometry(LINESTRING)
+
+);
+
+INSERT INTO ch02.my_linestrings (name, my_linestrings)
+
+VALUES
+
+('Open', ST_GeomFromText('LINESTRING(0 0, 1 1, 1 -1)')),
+
+('Closed', ST_GeomFromText('LINESTRING(0 0, 1 1, 1 -1, 0 0)'));
+
+   
+
+Select * from ch02.my_linestrings;
+
+Select ST_isSimple(St_GeomFromText('LINESTRING(2,0,0 0,1 1,1 -1)'));
+
+Create table ch02.Forty4(
+id serial Primary Key,
+name varchar(20),
+Forty4 geometry(Linestring)
+);
+
+Insert into ch02.Forty4 (Name, Forty4)
+Values
+('Open', )
+
+Create able ch02.my_geomeries(
+id serial Primary KLey,
+name varchar(20),
+my_geometries geometry(Polygon)
+);
+
+
+ALTER TABLE ch02.my_geometries ADD COLUMN my_polygons geometry(POLYGON);
+
+INSERT INTO ch02.my_geometries (name, my_polygons)
+
+VALUES (
+
+'Triangle',
+
+ST_GeomFromText('POLYGON((0 0, 1 1, 1 -1, 0 0))')
+
+);
+
+
+INSERT INTO ch02.my_geometries (name,my_polygons)
+
+VALUES (
+
+'Square 2 holes',
+
+ST_GeomFromText('POLYGON(
+
+(-0.25 -1.25,-0.25 1.25,2.5 1.25,2.5 -1.25,-0.25 -1.25),
+
+(2.25 0,1.25 1,1.25 -1,2.25 0),(1 -1,1 1,0 0,1 -1))'
+
+)
+
+);
+
+SELECT ST_AsText(ST_Collect(g))
+
+FROM (
+
+SELECT ST_GeomFromText('MULTIPOINT(-1 1, 0 0, 2 3)') As g
+
+UNION ALL
+
+SELECT ST_GeomFromText(
+
+'MULTILINESTRING((0 0, 0 1, 1 1), (-1 1, -1 -1))'
+
+) As g
+
+UNION ALL
+
+SELECT ST_GeomFromText(
+
+'POLYGON(
+
+(-0.25 -1.25, -0.25 1.25, 2.5 1.25, 2.5 -1.25, -0.25 -1.25),
+
+(2.25 0, 1.25 1, 1.25 -1, 2.25 0),
+
+(1 -1, 1 1, 0 0, 1 -1)
+
+)'
+
+) As g
+
+) x;
+
+CREATE TABLE ch02.my_geogs (
+
+id serial PRIMARY KEY,
+
+name varchar(20),
+
+my_point geography(POINT)
+
+);
+
+INSERT INTO ch02.my_geogs (name, my_point)
+
+VALUES
+
+('Home',ST_GeogFromText('POINT(0 0)')),
+
+('Pizza 1',ST_GeogFromText('POINT(1 1)')),
+
+('Pizza 2',ST_GeogFromText('POINT(1 -1)'));
+

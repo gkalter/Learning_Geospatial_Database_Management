@@ -1,0 +1,107 @@
+--Drop table if you need to restart
+Drop Table Recent_Contract_Awards CASCADE;
+
+--Q1 Create the format of the table with associated data types
+--Note while this is from the slides some of these are not so hot on purpose
+CREATE TABLE Recent_Contract_Awards (
+RequestID varchar,
+StartDate varchar,
+EndDate varchar,
+AgencyName varchar, TypeOfNoticeDescription varchar, CategoryDescription varchar,
+ShortTitle varchar, SelectionMethodDescription varchar, SectionName TEXT, SpecialCaseReasonDescription varchar, PIN varchar,
+DueDate varchar, AddressToRequest TEXT, ContactName varchar, ContactPhone varchar,
+Email varchar, ContractAmount varchar, ContactFax varchar, AdditionalDescription1 varchar, VendorName varchar, VendorAddress TEXT
+);
+
+--Q1 Read in the data
+Copy Recent_Contract_Awards (RequestID, StartDate, EndDate, AgencyName, 
+							 TypeOfNoticeDescription, CategoryDescription, 
+							 ShortTitle, SelectionMethodDescription, SectionName, 
+							 SpecialCaseReasonDescription, PIN, DueDate, AddressToRequest, 
+							 ContactName, ContactPhone, Email, ContractAmount, ContactFax, 
+							 AdditionalDescription1, VendorName, VendorAddress )
+							 
+--On Macbooks granting PgAdmin access to cvs files requires disabling the main firewall
+--But it can be stored locally in Postgre
+FROM '/Library/PostgreSQL/14/bin/Database/Recent_Contract_Awards.csv'  CSV DELIMITER ',' ;
+
+-- Let's check to see if it worked
+SELECT * FROM Recent_Contract_Awards
+
+--Q2 add ID 
+ALTER TABLE Recent_Contract_Awards ADD id serial;
+ALter TABLE Recent_Contract_Awards ADD PRIMARY KEY(id);
+
+--Q3 Remove header, note ID now starts at 2
+DELETE FROM Recent_Contract_Awards WHERE id = 1;
+
+--Check our work
+SELECT * FROM Recent_Contract_Awards
+
+--Q4 Select the contracts from 2010 to 2019
+--Cast acts to functionally change the datatype 
+--View is a way to temporarily store the 'new table' 
+CREATE VIEW Contract_2010s AS
+SELECT * FROM Recent_Contract_Awards 
+WHERE CAST(StartDate AS Date) >= '1/1/2010' AND CAST(EndDate AS date) <= '12/31/2019'
+
+-- Let's check our answer
+SELECT*FROM Contract_2010s;
+
+--Q5 Finding the number of contracts during the decade
+--ANSWER:19134 Contracts during the decade
+SELECT COUNT(*) FROM Recent_Contract_Awards 
+WHERE CAST(StartDate AS Date) >= '1/1/2010' AND CAST(EndDate as date) <= '12/31/2019';
+
+--Q6 Remove contracts with 0 or less in contract amount. 
+--Note now there are contracts are 18208 contracts
+DELETE FROM Contract_2010s where contractamount <= '0';
+
+--Q7 ANSWER: Since we were told to only use reference in Q5 unless told otherwise the answer 
+--  and no such reference was made the answer is technically 0. 
+
+-- However, if I am wrong here's how we would find the answer of 15753 contracts not during 
+-- the 2010s with a contract value greater than 0.
+
+CREATE View Not_Contract_2010s AS
+SELECT * FROM Recent_Contract_Awards 
+WHERE contractamount > '0' AND CAST(StartDate AS Date) <= '1/1/2010' OR CAST(EndDate AS date) >= '12/31/2019';
+
+SELECT COUNT(*) FROM Not_Contract_2010s
+
+-- Q8 Procurements made by Citywide Administrative Services
+SELECT*FROM Contract_2010s 
+WHERE agencyname = 'Citywide Administrative Services' AND sectionname ='Procurement';
+
+--The count if you want it is 5098 contracts 
+SELECT COUNT(*) FROM Contract_2010s 
+WHERE agencyname = 'Citywide Administrative Services' AND sectionname ='Procurement';
+
+-- Q9 Identifying distinct vendors and the number of contracts in each in descending order
+CREATE VIEW Vendors AS
+SELECT DISTINCT Vendorname, COUNT(vendorname) AS total FROM 
+Contract_2010s GROUP BY Vendorname ORDER BY total DESC;
+
+--Q10 First, let's see how many contacts, there are 18197.
+SELECT SUM(CAST(total AS int)) FROM Vendors;
+
+-- Let's slice the top 50 Vendors
+CREATE VIEW Vendors2 AS
+SELECT DISTINCT Vendorname, COUNT(vendorname) AS total FROM
+Contract_2010s GROUP BY Vendorname ORDER BY total DESC LIMIT 50;
+
+--  The sum of the top 50 vendor contracts is  1399. 
+Select SUM(CAST(total AS int)) FROM Vendors2;
+
+--Answer: While you could divide in SQL this is fairly quick math with 1399/18197 = 7.68% 
+
+--Q11: Find Short titles that contain reference to either Central Park or Washington Square Park
+CREATE VIEW Contract_Sum AS
+SELECT * FROM Contract_2010s WHERE ShortTitle LIKE '%CENTRAL PARK%' OR 
+ShortTitle LIKE '%WASHINGTON SQUARE PARK%';
+
+--Answer: The sum of contracts with reference to either is 36083430.419
+Select SUM(Cast(contractamount AS FLOAT)) FROM Contract_Sum 
+
+
+

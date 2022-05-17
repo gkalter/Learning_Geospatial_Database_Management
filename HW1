@@ -1,0 +1,56 @@
+
+CREATE TABLE Recent_Contract_Awards (
+
+RequestID varchar,
+
+StartDate varchar,
+
+EndDate varchar,
+
+AgencyName varchar,
+
+TypeOfNoticeDescription varchar,
+
+CategoryDescription varchar,
+
+ShortTitle varchar,  
+
+SelectionMethodDescription varchar,
+
+SectionName TEXT,
+
+SpecialCaseReasonDescription varchar,
+
+PIN varchar,
+
+DueDate varchar,
+
+AddressToRequest TEXT,
+
+ContactName varchar,
+
+ContactPhone varchar,
+
+Email varchar,
+
+ContractAmount varchar,
+
+ContactFax varchar,
+
+AdditionalDescription1 varchar,
+
+VendorName varchar,
+
+VendorAddress TEXT 
+
+);
+
+
+Copy Recent_Contract_Awards (RequestID, StartDate , EndDate, 
+							 AgencyName, TypeOfNoticeDescription, CategoryDescription, 
+							 ShortTitle, SelectionMethodDescription, SectionName, 
+							 SpecialCaseReasonDescription, PIN, DueDate, AddressToRequest, 
+							 ContactName, ContactPhone, Email, ContractAmount, ContactFax, 
+							 AdditionalDescription1, VendorName,VendorAddress )
+
+FROM '/Users/garrenkalter/Desktop/Trial/Recent_Contract_Awards.csv'  CSV DELIMITER ',' ;
